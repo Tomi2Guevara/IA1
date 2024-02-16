@@ -23,6 +23,20 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Tomi2Guevara"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="9fdb14ff-af28-430a-ad05-3387e35a0f91" />
+        <option name="url" value="https://github.com/Tomi2Guevara/IA1.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
@@ -49,7 +63,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "test",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/tguev/AppData/Local/Microsoft/WindowsApps/python3.11.exe",
     "node.js.detected.package.eslint": "true",
@@ -140,7 +154,7 @@
       <workItem from="1708007574101" duration="1830000" />
       <workItem from="1708011207199" duration="1134000" />
       <workItem from="1708027337719" duration="4591000" />
-      <workItem from="1708087370044" duration="4557000" />
+      <workItem from="1708087370044" duration="4924000" />
     </task>
     <servers />
   </component>

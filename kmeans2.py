@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import os
 
 
@@ -10,7 +10,8 @@ class foto:
     def __init__(self, h, s, circularity, hu, id=None):
         self.id = id
         self.car = [h, s, circularity]
-        self.car.extend(hu)
+        for i in hu:
+            self.car.append(i[0])
 
     def resta(self, other):
         return np.linalg.norm(np.array(self.car) - other)
@@ -92,4 +93,11 @@ def calculate_hu_moments(img):
     return hu_moments
 
 
+img = cv2.imread('pera11.jpg')
+h, s = calculate_dominant_color(img)
+circularity = calculate_circularity(img)
+hu = calculate_hu_moments(img)
+f = foto(h, s, circularity, hu)
+print(hu)
+print(f.car)
 

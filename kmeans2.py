@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import os
 
 
@@ -34,16 +34,18 @@ class KMeans:
             for i in data:
                 # comparamos los atributos de data[i] con los atributos da cada centroide
                 for centroid in centroids:
-                    print(centroid)
                     distances = i.resta(centroid)
 
                 classification = np.argmin(distances)
                 classifications[classification].append(i.car)
             # creamos los nuevos centroides
             centroidsNew = []
-            for dot in range(len(classifications)):
-                centroidsNew[dot] = np.average(classifications[dot], axis=0)
-            e = np.abs(centroidsNew - centroids)
+            for dot in range(self.k):
+                if len(classifications[dot]) > 0:  # Verificar si la lista está vacía
+                    centroidsNew.append(np.average(classifications[dot], axis=0))
+                else:
+                    centroidsNew.append(centroids[dot])  # Usar el centroide anterior si la lista está vacía
+            e = [np.linalg.norm(np.array(new) - np.array(old)) for new, old in zip(centroidsNew, centroids)]
             if (np.abs(np.max(e)) <= self.tol) or (cont == self.max_iter):
                 status = False
             else:
@@ -52,8 +54,8 @@ class KMeans:
         self.centroids = centroids
         return centroids
 
-    def predict(self, data):
-        distances = [np.linalg.norm(data.car - centroid) for centroid in self.centroids]
+    def predict(self, info):
+        distances = [info.resta(centroid) for centroid in self.centroids]
         classification = np.argmin(distances)
         return classification
 
@@ -93,11 +95,54 @@ def calculate_hu_moments(img):
     return hu_moments
 
 
-img = cv2.imread('pera11.jpg')
-h, s = calculate_dominant_color(img)
-circularity = calculate_circularity(img)
-hu = calculate_hu_moments(img)
-f = foto(h, s, circularity, hu)
-print(hu)
-print(f.car)
+# Crear un conjunto de datos que incluya el color predominante, la circularidad y los momentos de Hu de cada imagen
+# Direcciones de las imágenes
+entrenamiento = "C:/Users/tguev/Documents/Fing/IA/Curso/redesNeuronales/DataSet/entrenamiento"
+prueba = "C:/Users/tguev/Documents/Fing/IA/Curso/redesNeuronales/DataSet/Validacion"
+centros = "C:/Users/tguev/Documents/Fing/IA/Curso/redesNeuronales/DataSet/centros"
+
+listTrain = os.listdir(entrenamiento)
+listTest = os.listdir(prueba)
+listCentros = os.listdir(centros)
+
+# Parámetros
+ancho, alto = 200, 200
+
+data = []
+centros = []
+# Cargar imágenes de entrenamiento
+for nameDir in listTrain:
+    nombre = entrenamiento + "/" + nameDir  # Leemos las fotos
+    for nameFile in os.listdir(nombre):  # asignamos etiquetas
+        img = cv2.imread(os.path.join(nombre, nameFile))
+        img = cv2.resize(img, (ancho, alto), interpolation=cv2.INTER_CUBIC)
+        dominant_color = calculate_dominant_color(img)
+        circularity = calculate_circularity(img)
+        hu_moments = calculate_hu_moments(img)
+        # instanciar objeto del tipo foto
+        newFoto = foto(dominant_color[0], dominant_color[1], circularity, hu_moments, nameFile)
+        data.append(newFoto)
+    centros.append(newFoto.car)
+
+# Crear una instancia de KMeans
+kmeans = KMeans(4)
+
+# Ajustar los datos
+centroides = kmeans.fit(data, centros)
+
+# Cargar imágenes de prueba
+for nameDir in listTest:
+    nombre = prueba + "/" + nameDir  # Leemos las fotos
+    for nameFile in os.listdir(nombre):  # asignamos etiquetas
+        img = cv2.imread(os.path.join(nombre, nameFile))
+        img = cv2.resize(img, (ancho, alto), interpolation=cv2.INTER_CUBIC)
+        dominant_color = calculate_dominant_color(img)
+        circularity = calculate_circularity(img)
+        hu_moments = calculate_hu_moments(img)
+        # instanciar objeto del tipo foto
+        newFoto = foto(dominant_color[0], dominant_color[1], circularity, hu_moments, nameFile)
+        print(nameFile, kmeans.predict(newFoto))
+        plt.imshow(img)
+
+
 

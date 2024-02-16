@@ -130,19 +130,6 @@ kmeans = KMeans(4)
 # Ajustar los datos
 centroides = kmeans.fit(data, centros)
 
-# Cargar imágenes de prueba
-for nameDir in listTest:
-    nombre = prueba + "/" + nameDir  # Leemos las fotos
-    for nameFile in os.listdir(nombre):  # asignamos etiquetas
-        img = cv2.imread(os.path.join(nombre, nameFile))
-        img = cv2.resize(img, (ancho, alto), interpolation=cv2.INTER_CUBIC)
-        dominant_color = calculate_dominant_color(img)
-        circularity = calculate_circularity(img)
-        hu_moments = calculate_hu_moments(img)
-        # instanciar objeto del tipo foto
-        newFoto = foto(dominant_color[0], dominant_color[1], circularity, hu_moments, nameFile)
-        print(nameFile, kmeans.predict(newFoto))
-        plt.imshow(img)
 
 
 

@@ -92,40 +92,4 @@ def calculate_hu_moments(img):
     return hu_moments
 
 
-# Crear un conjunto de datos que incluya el color predominante, la circularidad y los momentos de Hu de cada imagen
-# Direcciones de las imágenes
-entrenamiento = "C:/Users/tguev/Documents/Fing/IA/Proyecto/Curso/redesNeuronales/DataSet/entrenamiento"
-prueba = "C:/Users/tguev/Documents/Fing/IA/Proyecto/Curso/redesNeuronales/DataSet/Validacion"
-centros = "C:/Users/tguev/Documents/Fing/IA/Proyecto/Curso/redesNeuronales/DataSet/centros"
 
-listTrain = os.listdir(entrenamiento)
-listTest = os.listdir(prueba)
-listCentros = os.listdir(centros)
-
-# Parámetros
-ancho, alto = 200, 200
-
-data = []
-centros = []
-# Cargar imágenes de entrenamiento
-for nameDir in listTrain:
-    nombre = entrenamiento + "/" + nameDir  # Leemos las fotos
-    for nameFile in os.listdir(nombre):  # asignamos etiquetas
-        img = cv2.imread(os.path.join(nombre, nameFile))
-        img = cv2.resize(img, (ancho, alto), interpolation=cv2.INTER_CUBIC)
-        dominant_color = calculate_dominant_color(img)
-        circularity = calculate_circularity(img)
-        hu_moments = calculate_hu_moments(img)
-        # instanciar objeto del tipo foto
-        newFoto = foto(dominant_color[0], dominant_color[1], circularity, hu_moments, nameFile)
-        data.append(newFoto)
-    centros.append(newFoto.car)
-
-# Crear una instancia de KMeans
-kmeans = KMeans(4)
-
-# Ajustar los datos
-centroides = kmeans.fit(data, centros)
-
-# Visualizar los resultados
-print(centroides)

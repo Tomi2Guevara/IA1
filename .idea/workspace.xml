@@ -54,7 +54,7 @@
     &quot;Python.brillo.executor&quot;: &quot;Run&quot;,
     &quot;Python.hnn.executor&quot;: &quot;Run&quot;,
     &quot;Python.kmeans.executor&quot;: &quot;Run&quot;,
-    &quot;Python.kmeans2.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.kmeans2.executor&quot;: &quot;Run&quot;,
     &quot;Python.lecturaIMG.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.predicción.executor&quot;: &quot;Run&quot;,
@@ -157,6 +157,8 @@
       <workItem from="1708027337719" duration="4591000" />
       <workItem from="1708087370044" duration="5866000" />
       <workItem from="1708097228770" duration="650000" />
+      <workItem from="1708101100704" duration="3125000" />
+      <workItem from="1708175377671" duration="331000" />
     </task>
     <servers />
   </component>
@@ -175,7 +177,7 @@
     <SUITE FILE_PATH="coverage/Integrador$recorte.coverage" NAME="recorte Coverage Results" MODIFIED="1704385090839" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Curso/CLase2" />
     <SUITE FILE_PATH="coverage/Integrador$brillo.coverage" NAME="brillo Coverage Results" MODIFIED="1704395874524" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Curso/Clase3_procesamiento" />
     <SUITE FILE_PATH="coverage/Integrador$umbralizar.coverage" NAME="umbralizar Coverage Results" MODIFIED="1704396925362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Curso/Clase3_procesamiento" />
-    <SUITE FILE_PATH="coverage/Proyecto$kmeans2.coverage" NAME="kmeans2 Coverage Results" MODIFIED="1708097856153" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Proyecto$kmeans2.coverage" NAME="kmeans2 Coverage Results" MODIFIED="1708111953673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Integrador$imageBN.coverage" NAME="imageBN Coverage Results" MODIFIED="1704374368654" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Proyecto$lecturaIMG.coverage" NAME="lecturaIMG Coverage Results" MODIFIED="1704577829087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Curso/Clase1" />
     <SUITE FILE_PATH="coverage/Proyecto$kmeans.coverage" NAME="kmeans Coverage Results" MODIFIED="1707767230980" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

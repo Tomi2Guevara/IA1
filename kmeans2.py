@@ -11,7 +11,7 @@ class foto:
         self.id = id
         self.car = [h, s, circularity]
         for i in hu:
-            self.car.append(i[0])
+            self.car.append(i)
 
     def resta(self, other):
         return np.linalg.norm(np.array(self.car) - other)
@@ -92,7 +92,9 @@ def calculate_hu_moments(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     moments = cv2.moments(gray)
     hu_moments = cv2.HuMoments(moments)
-    return hu_moments
+    # Seleccionar solo los momentos 1, 2, 3 y 6
+    selected_hu_moments = [hu_moments[i][0] for i in [0, 1, 2, 5]]
+    return selected_hu_moments
 
 
 # Crear un conjunto de datos que incluya el color predominante, la circularidad y los momentos de Hu de cada imagen
@@ -129,6 +131,22 @@ kmeans = KMeans(4)
 
 # Ajustar los datos
 centroides = kmeans.fit(data, centros)
+# Cargar imágenes de prueba
+for nameDir in listTest:
+    nombre = prueba + "/" + nameDir  # Leemos las fotos
+    for nameFile in os.listdir(nombre):  # asignamos etiquetas
+        img = cv2.imread(os.path.join(nombre, nameFile))
+        img = cv2.resize(img, (ancho, alto), interpolation=cv2.INTER_CUBIC)
+        dominant_color = calculate_dominant_color(img)
+        circularity = calculate_circularity(img)
+        hu_moments = calculate_hu_moments(img)
+        # instanciar objeto del tipo foto
+        newFoto = foto(dominant_color[0], dominant_color[1], circularity, hu_moments, nameFile)
+        print(nameFile, kmeans.predict(newFoto))
+        # data.append(newFoto)
+    # centros.append(newFoto.car)
+
+
 
 
 

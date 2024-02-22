@@ -1,10 +1,5 @@
 import librosa
-import os
 import numpy as np
-
-
-
-
 
 class KNN:
     def __init__(self, k=3):
@@ -43,76 +38,39 @@ class KNN:
 
 
 
-def preprocess_audio(file_path):
-    # Cargar el audio
-    y, sr = librosa.load(file_path, sr=None)
+    def preprocess_audio(self, file_path):
+        # Cargar el audio
+        y, sr = librosa.load(file_path, sr=None)
 
-    # Usar trim para cortar las partes del audio que no sirven
-    y, _ = librosa.effects.trim(y)
+        # Usar trim para cortar las partes del audio que no sirven
+        y, _ = librosa.effects.trim(y)
 
-    # Preprocesar los audios (eliminar ruidos de fondo)
-    y = librosa.effects.percussive(y)
+        # Preprocesar los audios (eliminar ruidos de fondo)
+        y = librosa.effects.percussive(y)
 
-    # Normalizar los audios
-    y = librosa.util.normalize(y)
+        # Normalizar los audios
+        y = librosa.util.normalize(y)
 
-    # Dividir el audio en diferentes sectores (opcional)
-    #frames = librosa.util.frame(y)
+        # Dividir el audio en diferentes sectores (opcional)
+        #frames = librosa.util.frame(y)
 
-    # Seleccionar los momentos más relevantes del audio
-    #mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+        # Seleccionar los momentos más relevantes del audio
+        #mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
 
-    return y, sr
-def label_for_filename(filename):
-    if "Banana" in filename:
-        return 0
-    elif 'Manzana' in filename:
-        return 1
-    elif 'Pera' in filename:
-        return 2
-    elif 'Naranja' in filename:
-        return 3
-    else:
-        raise ValueError("Unknown filename: {}".format(filename))
-
-
-# Cargar y preprocesar los audios
-entrenamiento = r"C:\Users\tguev\Documents\Fing\IA\Curso\audios"
-
-listTrain = os.listdir(entrenamiento)
+        return y, sr
+    def label_for_filename(self, filename):
+        if "Banana" in filename:
+            return 0
+        elif 'Manzana' in filename:
+            return 1
+        elif 'Pera' in filename:
+            return 3
+        elif 'Naranja' in filename:
+            return 2
+        else:
+            raise ValueError("Unknown filename: {}".format(filename))
 
 
-xTrain = []
-yTrain = []
-# Cargar audios de entrenamiento
-for nameDir in listTrain:
-    nombre = entrenamiento + "//" + nameDir  # Leemos las fotos
-    for nameFile in os.listdir(nombre):  # asignamos etiquetas
-        file_path = os.path.join(nombre, nameFile)
-        y, sr = preprocess_audio(file_path)
-        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-        contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
-        tonnetz = librosa.feature.tonnetz(y=y, sr=sr)
-        data = np.concatenate((mfccs, chroma, contrast, tonnetz), axis=0)
-        xTrain.append(data)
-        yTrain.append(label_for_filename(nombre))
-
-# Crear una instancia de KNN
-knn = KNN(5)
-
-# Ajustar los datos (asumiendo que 'y' es tu vector de etiquetas)
-knn.fit(xTrain, yTrain)
-
-test = r"C:\Users\tguev\Documents\Fing\IA\audioTest\pera.wav"
-
-y, sr = preprocess_audio(test)
-mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
-tonnetz = librosa.feature.tonnetz(y=y, sr=sr)
-dataTest = np.concatenate((mfccs, chroma, contrast, tonnetz), axis=0)
-print('predict:',knn.predict(dataTest))
 
 
 

@@ -7,7 +7,23 @@ import matplotlib.pyplot as plt
 import librosa
 import numpy as np
 
+def audio(link):
+    y, sr = knn.preprocess_audio(link)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr)
+    contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
+    tonnetz = librosa.feature.tonnetz(y=y, sr=sr)
+    dataTest = np.concatenate((mfccs*100, chroma*0.5, contrast*0.2, tonnetz*0.2), axis=0)
+    return dataTest
 
+def photo(link):
+    img = cv2.imread(link)
+    img = cv2.resize(img, (ancho, alto), interpolation=cv2.INTER_CUBIC)
+    h, s = km.calculate_dominant_color(img)
+    imgHu, imgCir = km.preprocess_image(img)
+    circularity = km.calculate_circularity(imgCir)
+    hu_moments = km.calculate_hu_moments(imgHu)
+    return h, s, circularity, hu_moments
 
 # Crear un conjunto de datos que incluya el color predominante, la circularidad y los momentos de Hu de cada imagen
 # Direcciones de las imágenes
@@ -25,12 +41,8 @@ centros = []
 for nameDir in listTrain:
     nombre = entrenamiento + "/" + nameDir  # Leemos las fotos
     for nameFile in os.listdir(nombre):  # asignamos etiquetas
-        img = cv2.imread(os.path.join(nombre, nameFile))
-        img = cv2.resize(img, (ancho, alto), interpolation=cv2.INTER_CUBIC)
-        h, s = km.calculate_dominant_color(img)
-        imgHu, imgCir = km.preprocess_image(img)
-        circularity = km.calculate_circularity(imgCir)
-        hu_moments = km.calculate_hu_moments(imgHu)
+        file_path = os.path.join(nombre, nameFile)
+        h, s, circularity, hu_moments = photo(file_path)
         # instanciar objeto del tipo foto
         newFoto = foto(h, s, circularity, hu_moments, nameFile)
         data.append(newFoto)
@@ -38,6 +50,7 @@ for nameDir in listTrain:
 
 # Ajustar los datos
 centroides = km.fit(data, centros)
+
 
 #----------------------- AUDIO -----------------------
 
@@ -55,12 +68,7 @@ for nameDir in listTrain:
     nombre = entrenamiento + "//" + nameDir  # Leemos las fotos
     for nameFile in os.listdir(nombre):  # asignamos etiquetas
         file_path = os.path.join(nombre, nameFile)
-        y, sr = knn.preprocess_audio(file_path)
-        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-        chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-        contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
-        tonnetz = librosa.feature.tonnetz(y=y, sr=sr)
-        data = np.concatenate((mfccs, chroma, contrast, tonnetz), axis=0)
+        data = audio(file_path)
         xTrain.append(data)
         yTrain.append(knn.label_for_filename(nombre))
 
@@ -80,27 +88,18 @@ paths = []
 for nameDir in listTrain:
     nombre = fotos + "/" + nameDir  # Leemos las fotos
     file_path = os.path.join(nombre)
-    img = cv2.imread(file_path)
-    img = cv2.resize(img, (ancho, alto), interpolation=cv2.INTER_CUBIC)
-    dominant_color = km.calculate_dominant_color(img)
-    imgHu, imgCir = km.preprocess_image(img)
-    circularity = km.calculate_circularity(imgCir)
-    hu_moments = km.calculate_hu_moments(imgHu)
-    newFoto0 = foto(dominant_color[0], dominant_color[1], circularity, hu_moments)
+    h, s, circularity, hu_moments = photo(file_path)
+    newFoto0 = foto(h, s, circularity, hu_moments, nameDir)
     fotoPred.append(km.predict(newFoto0))
     paths.append(file_path)
 
 
 
 #cargamos el audio a identificar
-test = r"C:\Users\tguev\Documents\Fing\IA\Curso\test\Audios\manzana.wav"
-
-y, sr = knn.preprocess_audio(test)
-mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-contrast = librosa.feature.spectral_contrast(y=y, sr=sr)
-tonnetz = librosa.feature.tonnetz(y=y, sr=sr)
-dataTest = np.concatenate((mfccs, chroma, contrast, tonnetz), axis=0)
+test = r"C:\Users\tguev\Documents\Fing\IA\Curso\test\Audios"
+testList = os.listdir(test)
+test = test + "\\" + testList[0]
+dataTest = audio(test)
 comando = knn.predict(dataTest)
 
 for i in fotoPred:

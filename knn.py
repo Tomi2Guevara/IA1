@@ -12,7 +12,7 @@ class KNN:
     def predict(self, x):
         distances = self.euclidean_distance(x)
         ys = []
-        k_indices = np.argsort(distances)[:self.k] #corregir, no tiene que estar ordenado
+        k_indices = np.argsort(distances)[:self.k]
         for i in range(self.k):
             print(self.y_train[k_indices[i]])
             ys.append(self.y_train[k_indices[i]])

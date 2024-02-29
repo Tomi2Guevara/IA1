@@ -8,9 +8,7 @@ import numpy as np
 class foto:
     def __init__(self, h, s, circularity, hu, id=None):
         self.id = id
-        self.car = [h, s, circularity]
-        for i in hu:
-            self.car.append(i)
+        self.car = [h, s, circularity, hu[0]]
 
     def resta(self, other):
         return np.linalg.norm(np.array(self.car) - np.array(other))
@@ -122,7 +120,8 @@ class KMeans:
         if perimeter == 0:
             return 0
         circularity = 4 * np.pi * area / (perimeter ** 2)
-        return circularity * 10
+        return circularity
+
 
 
     # Calcular los momentos de Hu de la imagen
@@ -130,8 +129,8 @@ class KMeans:
         moments = cv2.moments(img)
         hu_moments = cv2.HuMoments(moments)
         # Seleccionar solo los momentos 1, 2, 3 y 6
-        selected_hu_moments = [hu_moments[i][0] for i in [0, 1, 2, 5]]
-        return selected_hu_moments*100
+        selected_hu_moments = [hu_moments[i][0] for i in [0]] #con 5 es el recomendado
+        return selected_hu_moments
 
 
 

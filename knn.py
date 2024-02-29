@@ -54,6 +54,7 @@ class KNN:
         # Dividir el audio en diferentes sectores (opcional)
         #frames = librosa.util.frame(y)
 
+
         # Seleccionar los momentos más relevantes del audio
         #mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
 

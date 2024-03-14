@@ -1,17 +1,20 @@
 import cv2
 import numpy as np
-
-
-
-# psr
-
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+import pickle
 class foto:
-    def __init__(self, h, s, circularity, hu, id=None):
+    def __init__(self, circularity, hu, hist, id=None):
         self.id = id
-        self.car = [h, s, circularity, hu[0]]
+        self.car = [circularity, hu[0]**2]
+        for i in range(3):
+           self.car.append(hist[i][0])
 
     def resta(self, other):
         return np.linalg.norm(np.array(self.car) - np.array(other))
+
+
+
 
 
 class KMeans:
@@ -28,10 +31,12 @@ class KMeans:
         while status:
             for j in range(self.k):
                 classifications.append([])
+
             for i in data:
                 # comparamos los atributos de data[i] con los atributos da cada centroide
+                distances = []
                 for centroid in centroids:
-                    distances = i.resta(centroid)
+                    distances.append(i.resta(centroid))
 
                 classification = np.argmin(distances)
                 classifications[classification].append(i.car)
@@ -52,9 +57,12 @@ class KMeans:
         return centroids
 
     def predict(self, info):
-        distances = [info.resta(centroid) for centroid in self.centroids]
-        classification = np.argmin(distances)
-        return classification
+        distances = []
+        for i in self.centroids:
+            distances.append(info.resta(i))
+
+        return np.argmin(distances)
+
 
     def preprocess_image(self, image):
         # Convertir la imagen a escala de grises
@@ -84,33 +92,16 @@ class KMeans:
         # Normalizar la imagen
         normalized = cv2.normalize(segmented, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
+
+
+
+
         return normalized, segmented_for_circularity
     # Funciones requeridas
-    def calculate_dominant_color(self, img):
-        # Convertir la imagen de BGR a HSV
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-
-        # Definir el umbral para considerar un pixel como blanco
-        white_threshold = 200
-        non_white_pixels = np.all(hsv < white_threshold, axis=2)
-
-        # Split the HSV image into individual channels
-        h, s, v = cv2.split(hsv)
-
-        # Apply the non_white_pixels mask to each channel
-        h = h[non_white_pixels]
-        s = s[non_white_pixels]
-
-        # Calcular el color dominante solo en los píxeles no blancos
-        h = np.mean(h)
-        s = np.mean(s)
-
-        return h, s
 
 
     # Calcular la circularidad de la imagen
     def calculate_circularity(self, img):
-
         contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) == 0:
             return 0
@@ -120,6 +111,7 @@ class KMeans:
         if perimeter == 0:
             return 0
         circularity = 4 * np.pi * area / (perimeter ** 2)
+
         return circularity
 
 
@@ -129,8 +121,102 @@ class KMeans:
         moments = cv2.moments(img)
         hu_moments = cv2.HuMoments(moments)
         # Seleccionar solo los momentos 1, 2, 3 y 6
-        selected_hu_moments = [hu_moments[i][0] for i in [0]] #con 5 es el recomendado
+        selected_hu_moments = [hu_moments[i][0] for i in [1]] #con 5 es el recomendado
         return selected_hu_moments
+
+    def graficar(self, data, km):
+        dataPlot = []
+        for i in data:
+            dataPlot.append(i.car)
+
+        # Crea una instancia de PCA
+        pca = PCA(n_components=3)
+
+        # Crea un mapa de colores
+        colores = ['b', 'g', 'r', 'c']
+
+        # Ajusta y transforma los datos
+        data_pca = pca.fit_transform(dataPlot)
+
+        # Ajusta y transforma los centroides
+        centroides_pca = pca.transform(self.centroids)
+
+        # Crea una figura 3D
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Traza los datos
+        for i in range(len(data_pca)):
+            ax.scatter(data_pca[i, 0], data_pca[i, 1], data_pca[i, 2], color=colores[km.predict(data[i])])
+
+        # Traza los centroides
+        for i in range(len(centroides_pca)):
+            ax.scatter(centroides_pca[i, 0], centroides_pca[i, 1], centroides_pca[i, 2], color=colores[i], s=100,
+                       marker='x')
+
+        plt.show()
+
+    def visualizar(self, normalized_image, segmented_for_circularity):
+
+        # Mostrar la imagen normalizada
+        plt.figure(figsize=(10, 10))
+        plt.imshow(normalized_image, cmap='gray')
+        plt.title('Normalized Image')
+        plt.show()
+
+        # Mostrar la imagen segmentada para calcular la circularidad
+        plt.figure(figsize=(10, 10))
+        plt.imshow(segmented_for_circularity, cmap='gray')
+        plt.title('Segmented Image for Circularity Calculation')
+        plt.show()
+
+    def saveCents(self):
+
+        with open('centroids.pkl', 'wb') as f:
+            pickle.dump(self.centroids, f)
+
+    def loadCents(self):
+
+        with open('centroids.pkl', 'rb') as f:
+            self.centroids = pickle.load(f)
+
+        return self.centroids
+
+    def photo(self, link):
+        img = cv2.imread(link)
+        img = cv2.resize(img, (200, 200), interpolation=cv2.INTER_CUBIC)
+        imgHu, imgCir = self.preprocess_image(img)
+        circularity = self.calculate_circularity(imgCir)
+        hu_moments = self.calculate_hu_moments(imgHu)
+        hist = cv2.calcHist([img], [0], None, [256], [0, 256])
+        return (circularity * 10) ** 2, (hu_moments * 10), hist
+
+    def recImg(self,image_name, prediction):
+        # Cargamos la imagen
+        image = cv2.imread(image_name)
+
+        # Definimos los colores para cada clase en formato BGR
+        colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]
+
+        # Convertimos la imagen a escala de grises y aplicamos un umbral
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        _, threshold = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
+
+        # Encontramos los contornos en la imagen
+        contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Dibujamos un rectángulo alrededor de cada contorno
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > 3000:
+                x, y, width, height = cv2.boundingRect(contour)
+                cv2.rectangle(image, (x, y), (x + width, y + height), colors[prediction], 3)
+
+        # Mostramos la imagen
+        pick = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        plt.imshow(pick)
+        plt.show()
+
 
 
 
